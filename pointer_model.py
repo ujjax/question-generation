@@ -31,15 +31,16 @@ class Pointer_Model(object):
 	    self.max_grad_norm = config.max_grad_norm
 
 	    self.layer_dict = {}
-		
-		self.encoder_inputs = tf.placeholder()
-		self.decoder_targets = tf.placeholder()
-		self.encoder_seq_length = tf.placeholder()
-		self.decoder_seq_length = tf.placeholder()
-		self.mask = tf.placeholder()
+	    
+	    self.encoder_inputs = tf.placeholder()
+	    self.decoder_targets = tf.placeholder()
+	    self.encoder_seq_length = tf.placeholder()
+	    self.decoder_seq_length = tf.placeholder()
+	    self.mask = tf.placeholder()
 
-		if self.use_terminal_symbol:
-			self.decoder_seq_length +=1
+	    if self.use_terminal_symbol:
+	        self.decoder_seq_length +=1
+		
 
 	def _build_model(self, inputs):
 		self.global_step = tf.Variable(0, trainable = False)
@@ -56,7 +57,7 @@ class Pointer_Model(object):
 
 			if self.num_layers>1:
 				cells = [encoder_cell] * self.num_layers
-        		encoder_cell = MultiRNNCell(cells)			
+        			encoder_cell = MultiRNNCell(cells)			
 
 			self.encoder_outputs, self.encoder_final_state = tf.nn.dynamic_rnn(encoder_cell, self.encoder_inputs, sequence_length = self.encoder_seq_length)
 
@@ -65,25 +66,25 @@ class Pointer_Model(object):
 			self.decoder_cell = LSTMCell(self.hidden_dim, initializer = self.initializer)
 
 			if self.num_layers > 1:
-		        cells = [self.decoder_cell] * self.num_layers
-		        self.decoder_cell = MultiRNNCell(cells)
+		        	cells = [self.decoder_cell] * self.num_layers
+		        	self.decoder_cell = MultiRNNCell(cells)
 
-		    #self.decoder_rnn = tf.contrib.seq2seq.Decoder()
+		         #self.decoder_rnn = tf.contrib.seq2seq.Decoder()
 
-		    self.decoder_pred_logits , _ = decoder_rnn.step(, )
+		         self.decoder_pred_logits , _ = decoder_rnn.step(, )
 
-		    self.dec_pred_prob = tf.nn.softmax(
-		          self.dec_pred_logits, 2, name="dec_pred_prob")
+		          self.dec_pred_prob = tf.nn.softmax(
+		          	self.dec_pred_logits, 2, name="dec_pred_prob")
 
-		    self.dec_pred = tf.argmax(
-		          self.dec_pred_logits, 2, name="dec_pred")
+		         self.dec_pred = tf.argmax(
+		         	self.dec_pred_logits, 2, name="dec_pred")
 
 		with tf.variable_scope('decoder', reuse = True):
 			self.decoder_pred_logits , _ = 
 
 			self.dec_inference_prob = tf.nn.softmax(
 		          self.dec_inference_logits, 2, name="dec_inference_logits")
-		    self.dec_inference = tf.argmax(
+		    	self.dec_inference = tf.argmax(
 		          self.dec_inference_logits, 2, name="dec_inference")
 
 		    
