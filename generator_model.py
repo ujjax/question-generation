@@ -59,7 +59,7 @@ class Question_Generator(object):
 
 			h_d = tf.concat(encoder_ouputs, axis =2)
 
-		with tf.variable_scope('answer-encoding'):
+		with tf.name_scope('answer-encoding'):
 			unstacked_h_d = tf.unstack(h_d)
 			h_a_ = []
 
@@ -72,9 +72,39 @@ class Question_Generator(object):
 
 			h_a , _ = tf.nn.bidirectional_dynamic_rnn(answer_encoder_f,answer_encoder_b,inputs = tf.stack(h_a_))
 
-		with tf.variable_scope('cascading-cell'):
+			h_a_argmax = tf.argmax(h_a,2)
 
+		with tf.name_scope('cascading-cell'):
 			cascading_cell_1 = LSTMCell(hidden_dim)
 			cascading_cell_2 = LSTMCell(hidden_dim)
 
-			def cascading_cell_condition(k,,state,batch_tensor):
+			def cascading_cells_condition(t,,state, tensor_):
+				
+
+				with tf.variable_scope('weights-cascading'):
+					W_1 = tf.get_variable()
+					W_2 = tf.get_variable()
+					b_1 = tf.get_variable()
+					b_2 = tf.get_variable()
+
+				
+
+				temp_input = tf.concat(h_d_i,h_a_argmax,cascading_cell_1_output)
+				v_t = tf.matmul((tf.matmul(temp_input,W_1)+b_1),W_2) + b_2
+
+				alpha_t = 
+
+
+				t +=1
+				return t,state,tensor_
+
+			with tf.variable_scope('cascading-lstm'):
+				tensor_ = tf.TensorArray(dtype = tf.float32, size = hidden_dim)
+
+				condition = lambda p,q,r,s: tf.less(p, )
+				body = lambda p,q,r,s: cascading_cells_condition(p,q,r,s)
+				t = tf.constant(0)
+
+				cascading_loop = tf.while_loop(cond =condition , body = body,
+													loop_vars = (t, ))		
+
